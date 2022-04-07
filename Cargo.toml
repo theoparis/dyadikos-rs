@@ -1,5 +1,5 @@
 [package]
-name = "chatlab"
+name = "dyadikos"
 version = "0.0.1"
 edition = "2021"
 
@@ -14,3 +14,4 @@ rayon = "1.5.1"
 hecs = "0.7.6"
 yaks = "0.1.0"
 rand = "0.8.5"
+glam = { version = "*", features = ["serde", "glam-assert"] }

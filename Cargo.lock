@@ -65,20 +65,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "chatlab"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "hecs 0.7.6",
- "miniquad",
- "nu-json",
- "rand",
- "rayon",
- "serde",
- "yaks",
-]
-
-[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -154,6 +140,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "dyadikos"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "glam",
+ "hecs 0.7.6",
+ "miniquad",
+ "nu-json",
+ "rand",
+ "rayon",
+ "serde",
+ "yaks",
+]
+
+[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -174,6 +175,15 @@ dependencies = [
  "cfg-if 1.0.0",
  "libc",
  "wasi",
+]
+
+[[package]]
+name = "glam"
+version = "0.20.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3412e74893a912839a67e975aca0c88561e20e5461d2d358a5fa6d3b229fae59"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
