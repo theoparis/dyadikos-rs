@@ -1,0 +1,19 @@
+image: alpine/edge
+packages:
+  - curl
+sources:
+  - https://git.sr.ht/~theoparis/dyadikos
+tasks:
+  - install: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none --profile minimal -y
+      . .cargo/env
+      rustup run --install nightly cargo --version --verbose
+  - build: |
+      . .cargo/env
+      cd dyadikos
+      cargo +nightly fmt -- --check
+      RUSTFLAGS="-Dwarnings" cargo +nightly clippy -- -D warnings
+triggers:
+  - action: email
+    condition: failure
+    to: Theo Paris <theoparisdesigns@gmail.com>
