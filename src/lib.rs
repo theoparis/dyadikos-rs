@@ -1,4 +1,5 @@
 use glam::{vec2, vec3};
+use image::{GenericImage, GenericImageView, ImageBuffer, Pixel, RgbImage};
 use math::{Transform, Vertex};
 use miniquad::{
     Bindings, Buffer, BufferLayout, BufferType, Context, EventHandler,
@@ -21,7 +22,7 @@ pub struct Stage {
 impl Stage {
     pub fn new(
         ctx: &mut Context,
-        texture_size: u32,
+        texture: &str,
         update_fn: Box<dyn FnMut(&mut Transform)>,
     ) -> Stage {
         let vertices = vec![
@@ -49,16 +50,13 @@ impl Stage {
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
 
-        let pixels: Vec<u8> = (0..(texture_size.pow(2)))
-            .into_par_iter()
-            .map(|_| random::<u8>())
-            .collect();
+        let image = image::open(texture).unwrap();
 
         let texture = Texture::from_rgba8(
             ctx,
-            (texture_size / 2) as u16,
-            (texture_size / 2) as u16,
-            &pixels,
+            (image.dimensions().0) as u16,
+            (image.dimensions().1) as u16,
+            &image.to_rgba8().as_raw(),
         );
         texture.set_filter(ctx, FilterMode::Nearest);
 

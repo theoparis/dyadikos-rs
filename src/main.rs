@@ -6,7 +6,7 @@ fn main() {
         UserData::owning(
             Stage::new(
                 &mut ctx,
-                128,
+                "resources/dirt.jpg",
                 // Perform updates here
                 Box::new(move |transform| {
                     transform.position.y -= 0.001;
