@@ -1,10 +1,18 @@
 use crate::math::Transform;
 use crate::primitive::Model;
-use hecs::World;
+use legion::{IntoQuery, Registry, World};
 use miniquad::{
     Bindings, Buffer, BufferLayout, Context, EventHandler, Pipeline, Shader,
     Texture, VertexAttribute, VertexFormat,
 };
+
+pub fn create_registry() -> Registry<String> {
+    let mut registry = Registry::<String>::default();
+    registry.register::<Transform>("transform".to_string());
+    registry.register::<Model>("model".to_string());
+
+    registry
+}
 
 pub struct Stage {
     pipeline: Pipeline,
@@ -44,7 +52,7 @@ impl Stage {
             shader,
         );
 
-        let world = World::new();
+        let world = World::default();
 
         Stage { pipeline, world }
     }
@@ -58,9 +66,8 @@ impl EventHandler for Stage {
 
         ctx.apply_pipeline(&self.pipeline);
 
-        for (_id, (transform, model)) in
-            self.world.query_mut::<(&Transform, &Model)>()
-        {
+        let mut query = <(&Model, &Transform)>::query();
+        for (model, transform) in query.iter_mut(&mut self.world) {
             let (vertex_buffer, index_buffer, images) =
                 Self::spawn_model(ctx, model);
 
@@ -123,3 +130,33 @@ mod shader {
         pub transform: Mat4,
     }
 }
+
+//mod test {
+//fn test_serialize() {
+//use super::create_registry;
+//use crate::{math::Transform, primitive::Model};
+//use legion::{
+//serialize::{set_entity_serializer, Canon},
+//World,
+//};
+
+//let mut world = World::default();
+
+//world.push((Transform::default(), Model::quad(None)));
+
+//let entity_serializer = Canon::default();
+//let registry = create_registry();
+
+//let json = set_entity_serializer(&entity_serializer, || {
+//// The guid here will match the guid of the first entity we created
+//nu_json::to_value(&world.as_serializable(
+//legion::any(),
+//&registry,
+//&entity_serializer,
+//))
+//.expect("Failed to serialize entity container!")
+//});
+
+//panic!("{:?}", json);
+//}
+//}
