@@ -1,20 +1,17 @@
-use glam::{vec2, vec3};
-use image::{GenericImage, GenericImageView, ImageBuffer, Pixel, RgbImage};
-use math::{Transform, Vertex};
+use math::Transform;
 use miniquad::{
-    Bindings, Buffer, BufferLayout, BufferType, Context, EventHandler,
-    FilterMode, Pipeline, Shader, Texture, VertexAttribute, VertexFormat,
+    Bindings, BufferLayout, Context, EventHandler, Pipeline, Shader, Texture,
+    VertexAttribute, VertexFormat,
 };
-use rand::random;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use primitive::Model;
 
 pub mod math;
+pub mod primitive;
 
 pub struct Stage {
     pipeline: Pipeline,
     bindings: Bindings,
-    pub vertices: Vec<Vertex>,
-    pub indices: Vec<u16>,
+    model: Model,
     transform: Transform,
     update_fn: Box<dyn FnMut(&mut Transform)>,
 }
@@ -22,48 +19,24 @@ pub struct Stage {
 impl Stage {
     pub fn new(
         ctx: &mut Context,
-        texture: &str,
+        model: Model,
         update_fn: Box<dyn FnMut(&mut Transform)>,
     ) -> Stage {
-        let vertices = vec![
-            Vertex {
-                pos: vec3(-0.5, -0.5, 0.0),
-                uv: vec2(0., 0.),
-            },
-            Vertex {
-                pos: vec3(0.5, -0.5, 0.0),
-                uv: vec2(1., 0.),
-            },
-            Vertex {
-                pos: vec3(0.5, 0.5, 0.0),
-                uv: vec2(1., 1.),
-            },
-            Vertex {
-                pos: vec3(-0.5, 0.5, 0.0),
-                uv: vec2(0., 1.),
-            },
-        ];
-        let vertex_buffer =
-            Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
+        let (vertex_buffer, index_buffer, texture) = model.into_buffers(ctx);
+        let mut images = vec![];
 
-        let indices = vec![0, 1, 2, 0, 2, 3];
-        let index_buffer =
-            Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
+        if let Some(texture) = texture {
+            images.push(texture);
+        } else {
+            let texture = Texture::from_rgba8(ctx, 1, 1, &[255, 255, 255, 255]);
 
-        let image = image::open(texture).unwrap();
-
-        let texture = Texture::from_rgba8(
-            ctx,
-            (image.dimensions().0) as u16,
-            (image.dimensions().1) as u16,
-            &image.to_rgba8().as_raw(),
-        );
-        texture.set_filter(ctx, FilterMode::Nearest);
+            images.push(texture);
+        }
 
         let bindings = Bindings {
             vertex_buffers: vec![vertex_buffer],
             index_buffer,
-            images: vec![texture],
+            images,
         };
 
         let shader =
@@ -84,8 +57,7 @@ impl Stage {
         Stage {
             pipeline,
             bindings,
-            vertices,
-            indices,
+            model,
             transform,
             update_fn,
         }
@@ -105,7 +77,7 @@ impl EventHandler for Stage {
         ctx.apply_uniforms(&shader::Uniforms {
             transform: self.transform.get_matrix(),
         });
-        ctx.draw(0, self.indices.len() as i32, 1);
+        ctx.draw(0, self.model.indices.len() as i32, 1);
         ctx.end_render_pass();
 
         ctx.commit_frame();

@@ -2,14 +2,14 @@ use glam::{vec3, Mat4, Quat, Vec2, Vec3};
 use serde::{Deserialize, Serialize};
 
 #[repr(C)]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct Vertex {
     pub pos: Vec3,
     pub uv: Vec2,
 }
 
 #[repr(C)]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct Transform {
     pub position: Vec3,
     pub rotation: Quat,

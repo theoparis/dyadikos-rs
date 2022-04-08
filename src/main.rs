@@ -1,4 +1,4 @@
-use dyadikos::Stage;
+use dyadikos::{primitive::Model, Stage};
 use miniquad::UserData;
 
 fn main() {
@@ -6,7 +6,7 @@ fn main() {
         UserData::owning(
             Stage::new(
                 &mut ctx,
-                "resources/dirt.jpg",
+                Model::quad(None),
                 // Perform updates here
                 Box::new(move |transform| {
                     transform.position.y -= 0.001;
