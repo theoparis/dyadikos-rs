@@ -4,7 +4,7 @@ use image::GenericImageView;
 use miniquad::{Buffer, BufferType, Context, FilterMode, Texture};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Model {
     pub texture: Option<String>,
     pub vertices: Vec<Vertex>,

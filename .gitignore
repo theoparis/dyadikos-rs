@@ -4,4 +4,5 @@ target
 *.DS_Store*
 !*.example*
 Cargo.lock
-scene.hjson
+scene.json
+test.json
