@@ -7,5 +7,8 @@ edition = "2021"
 dyadikos = { path = "../core" }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
-miniquad = "*"
+miniquad = "0.3.0-alpha.46"
 anyhow = "*"
+egui = "0.17.0"
+egui-miniquad = "0.10.0"
+egui_nodes = { git = "https://github.com/theoparis/egui_nodes" }

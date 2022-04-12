@@ -1,9 +1,10 @@
 use crate::math::Transform;
 use crate::primitive::Model;
+use anyhow::Context;
 use legion::{IntoQuery, Registry, World};
 use miniquad::{
-    Bindings, Buffer, BufferLayout, Context, EventHandler, Pipeline, Shader,
-    Texture, VertexAttribute, VertexFormat,
+    Bindings, Buffer, BufferLayout, EventHandler, Pipeline, Shader, Texture,
+    VertexAttribute, VertexFormat,
 };
 
 pub fn create_registry() -> Registry<String> {
@@ -21,7 +22,7 @@ pub struct Stage {
 
 impl Stage {
     pub fn spawn_model(
-        ctx: &mut Context,
+        ctx: &mut miniquad::Context,
         model: &Model,
     ) -> (Buffer, Buffer, Vec<Texture>) {
         let (vertex_buffer, index_buffer, texture) = model.into_buffers(ctx);
@@ -38,9 +39,11 @@ impl Stage {
         (vertex_buffer, index_buffer, images)
     }
 
-    pub fn new(ctx: &mut Context) -> Stage {
+    pub fn new(ctx: &mut miniquad::Context) -> Stage {
         let shader =
-            Shader::new(ctx, shader::VERTEX, shader::FRAGMENT, shader::meta());
+            Shader::new(ctx, shader::VERTEX, shader::FRAGMENT, shader::meta())
+                .context("Failed to create shaders")
+                .unwrap();
 
         let pipeline = Pipeline::new(
             ctx,
@@ -59,9 +62,9 @@ impl Stage {
 }
 
 impl EventHandler for Stage {
-    fn update(&mut self, _ctx: &mut Context) {}
+    fn update(&mut self, _ctx: &mut miniquad::Context) {}
 
-    fn draw(&mut self, ctx: &mut Context) {
+    fn draw(&mut self, ctx: &mut miniquad::Context) {
         ctx.begin_default_pass(Default::default());
 
         ctx.apply_pipeline(&self.pipeline);
@@ -91,7 +94,7 @@ impl EventHandler for Stage {
 
 mod shader {
     use glam::Mat4;
-    use miniquad::{ShaderMeta, UniformBlockLayout, UniformType};
+    use miniquad::{ShaderMeta, UniformBlockLayout, UniformDesc, UniformType};
 
     pub const VERTEX: &str = r#"#version 330 core
     layout(location = 0) in vec3 pos;
@@ -120,9 +123,12 @@ mod shader {
 
     pub fn meta() -> ShaderMeta {
         ShaderMeta {
-            images: &["tex"],
+            images: vec!["tex".to_string()],
             uniforms: UniformBlockLayout {
-                uniforms: &[("transform", UniformType::Mat4)],
+                uniforms: vec![UniformDesc::new(
+                    "transform",
+                    UniformType::Mat4,
+                )],
             },
         }
     }
