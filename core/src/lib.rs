@@ -1,6 +1,5 @@
 use legion::{serialize::Canon, World};
 use serde::de::DeserializeSeed;
-use serde::Serialize;
 use serde_json::Value;
 use stage::create_registry;
 

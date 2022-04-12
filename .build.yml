@@ -16,6 +16,10 @@ tasks:
       cd dyadikos
       cargo +nightly fmt -- --check
       RUSTFLAGS="-Dwarnings" cargo +nightly clippy -- -D warnings
+  - test: |
+      . .cargo/env
+      cd dyadikos
+      cargo test
 triggers:
   - action: email
     condition: failure
