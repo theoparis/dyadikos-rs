@@ -1,27 +1,19 @@
-use dyadikos::stage::Stage;
+use dyadikos::{math::Transform, primitive::Model, stage::Stage};
 use egui_miniquad::EguiMq;
-use egui_nodes::{AttributeFlags, LinkArgs, NodeConstructor};
+use legion::IntoQuery;
 use miniquad as mq;
 
 struct Editor {
     stage: Stage,
     gui_ctx: EguiMq,
-    node_ctx: egui_nodes::Context,
-    links: Vec<(usize, usize)>,
 }
 
 impl Editor {
     pub fn new(ctx: &mut mq::Context) -> Self {
         let stage = Stage::new(ctx);
         let gui_ctx = EguiMq::new(ctx);
-        let node_ctx = egui_nodes::Context::default();
 
-        Self {
-            stage,
-            gui_ctx,
-            node_ctx,
-            links: vec![],
-        }
+        Self { stage, gui_ctx }
     }
 }
 
@@ -30,76 +22,47 @@ impl miniquad::EventHandler for Editor {
         self.stage.draw(ctx);
 
         self.gui_ctx.run(ctx, |egui_ctx| {
-            let nodes = vec![
-                NodeConstructor::new(0, Default::default())
-                    .with_title(|ui| ui.label("Example Node A"))
-                    .with_input_attribute(
-                        0,
-                        egui_nodes::PinArgs {
-                            flags: Some(
-                                AttributeFlags::EnableLinkDetachWithDragClick
-                                    as usize,
-                            ),
-                            ..Default::default()
-                        },
-                        |ui| ui.label("Input"),
-                    )
-                    .with_output_attribute(
-                        2,
-                        egui_nodes::PinArgs {
-                            flags: Some(
-                                AttributeFlags::EnableLinkDetachWithDragClick
-                                    as usize,
-                            ),
-                            ..Default::default()
-                        },
-                        |ui| ui.label("Output"),
-                    ),
-                NodeConstructor::new(1, Default::default())
-                    .with_title(|ui| ui.label("Example Node B"))
-                    .with_output_attribute(
-                        3,
-                        egui_nodes::PinArgs {
-                            flags: Some(
-                                AttributeFlags::EnableLinkDetachWithDragClick
-                                    as usize,
-                            ),
-                            ..Default::default()
-                        },
-                        |ui| ui.label("Output"),
-                    )
-                    .with_input_attribute(
-                        4,
-                        egui_nodes::PinArgs {
-                            flags: Some(
-                                AttributeFlags::EnableLinkDetachWithDragClick
-                                    as usize,
-                            ),
-                            ..Default::default()
-                        },
-                        |ui| ui.label("Input"),
-                    ),
-            ];
-
             egui::Window::new("Entities").show(egui_ctx, |ui| {
-                self.node_ctx.show(
-                    nodes,
-                    self.links.iter().enumerate().map(|(i, (start, end))| {
-                        (i, *start, *end, LinkArgs::default())
-                    }),
-                    ui,
-                );
+                if ui.button("+").clicked() {
+                    self.stage
+                        .world
+                        .push((Transform::default(), Model::quad(None)));
+                }
+
+                let mut query = <(&mut Transform, &mut Model)>::query();
+
+                for (i, (transform, model)) in
+                    query.iter_mut(&mut self.stage.world).enumerate()
+                {
+                    egui::CollapsingHeader::new(i.to_string())
+                        .selectable(true)
+                        .show(ui, |ui| {
+                            egui::CollapsingHeader::new("Position").show(
+                                ui,
+                                |ui| {
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[0],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[1],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[2],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                },
+                            );
+                        });
+                }
             });
-
-            // remove destroyed links
-            if let Some(idx) = self.node_ctx.link_destroyed() {
-                self.links.remove(idx);
-            }
-
-            // add created links
-            if let Some((start, end, _)) = self.node_ctx.link_created() {
-                self.links.push((start, end))
-            }
         });
 
         self.gui_ctx.draw(ctx);
@@ -168,9 +131,15 @@ impl miniquad::EventHandler for Editor {
 }
 
 fn main() {
-    mq::start(mq::conf::Conf::default(), |mut ctx| {
-        let editor = Editor::new(&mut ctx);
+    mq::start(
+        mq::conf::Conf {
+            window_title: "Dyadikos Editor".to_string(),
+            ..Default::default()
+        },
+        |mut ctx| {
+            let editor = Editor::new(&mut ctx);
 
-        mq::UserData::owning(editor, ctx)
-    });
+            mq::UserData::owning(editor, ctx)
+        },
+    );
 }

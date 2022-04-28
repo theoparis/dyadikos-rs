@@ -93,8 +93,8 @@ impl EventHandler for Stage {
 }
 
 mod shader {
-    use glam::Mat4;
     use miniquad::{ShaderMeta, UniformBlockLayout, UniformDesc, UniformType};
+    use nalgebra::Matrix4;
 
     pub const VERTEX: &str = r#"#version 330 core
     layout(location = 0) in vec3 pos;
@@ -133,7 +133,7 @@ mod shader {
         }
     }
     pub struct Uniforms {
-        pub transform: Mat4,
+        pub transform: Matrix4<f32>,
     }
 }
 

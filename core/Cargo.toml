@@ -14,6 +14,6 @@ rayon = "1.5.1"
 legion = { git = "https://github.com/amethyst/legion" }
 yaks = "0.1.0"
 rand = "0.8.5"
-glam = { version = "*", features = ["serde", "glam-assert"] }
+nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
 image = "*"
-
+gltf = "1.0.0"

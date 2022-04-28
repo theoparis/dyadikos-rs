@@ -1,7 +1,7 @@
 use crate::math::Vertex;
-use glam::{vec2, vec3};
 use image::GenericImageView;
 use miniquad::{Buffer, BufferType, Context, FilterMode, Texture};
+use nalgebra::{Vector2, Vector3};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -17,20 +17,20 @@ impl Model {
             texture,
             vertices: vec![
                 Vertex {
-                    pos: vec3(-0.5, -0.5, 0.0),
-                    uv: vec2(0., 0.),
+                    pos: Vector3::new(-0.5, -0.5, 0.0),
+                    uv: Vector2::new(0., 0.),
                 },
                 Vertex {
-                    pos: vec3(0.5, -0.5, 0.0),
-                    uv: vec2(1., 0.),
+                    pos: Vector3::new(0.5, -0.5, 0.0),
+                    uv: Vector2::new(1., 0.),
                 },
                 Vertex {
-                    pos: vec3(0.5, 0.5, 0.0),
-                    uv: vec2(1., 1.),
+                    pos: Vector3::new(0.5, 0.5, 0.0),
+                    uv: Vector2::new(1., 1.),
                 },
                 Vertex {
-                    pos: vec3(-0.5, 0.5, 0.0),
-                    uv: vec2(0., 1.),
+                    pos: Vector3::new(-0.5, 0.5, 0.0),
+                    uv: Vector2::new(0., 1.),
                 },
             ],
             indices: vec![0, 1, 2, 0, 2, 3],
