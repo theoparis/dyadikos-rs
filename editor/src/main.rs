@@ -31,7 +31,7 @@ impl miniquad::EventHandler for Editor {
 
                 let mut query = <(&mut Transform, &mut Model)>::query();
 
-                for (i, (transform, model)) in
+                for (i, (transform, _model)) in
                     query.iter_mut(&mut self.stage.world).enumerate()
                 {
                     egui::CollapsingHeader::new(i.to_string())
