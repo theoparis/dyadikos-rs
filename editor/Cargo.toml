@@ -9,8 +9,8 @@ serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 miniquad = "0.3.0-alpha.46"
 anyhow = "*"
-egui = "0.17.0"
+egui = "0.18.0"
 egui-miniquad = "0.10.0"
 legion = { git = "https://github.com/amethyst/legion" }
-nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
+nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 
