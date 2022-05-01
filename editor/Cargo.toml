@@ -10,7 +10,7 @@ serde_json = "*"
 miniquad = "0.3.0-alpha.46"
 anyhow = "*"
 egui = "0.18.0"
-egui-miniquad = "0.10.0"
+egui-miniquad = { git = "https://github.com/not-fl3/egui-miniquad", rev = "85febea3ae0a239febcdb61622c794627fb3707d" } 
 legion = { git = "https://github.com/amethyst/legion" }
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 
