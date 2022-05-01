@@ -34,33 +34,31 @@ impl miniquad::EventHandler for Editor {
                 for (i, (transform, _model)) in
                     query.iter_mut(&mut self.stage.world).enumerate()
                 {
-                    egui::CollapsingHeader::new(i.to_string())
-                        .selectable(true)
-                        .show(ui, |ui| {
-                            egui::CollapsingHeader::new("Position").show(
-                                ui,
-                                |ui| {
-                                    ui.add(
-                                        egui::DragValue::new(
-                                            &mut transform.position[0],
-                                        )
-                                        .speed(0.01),
-                                    );
-                                    ui.add(
-                                        egui::DragValue::new(
-                                            &mut transform.position[1],
-                                        )
-                                        .speed(0.01),
-                                    );
-                                    ui.add(
-                                        egui::DragValue::new(
-                                            &mut transform.position[2],
-                                        )
-                                        .speed(0.01),
-                                    );
-                                },
-                            );
-                        });
+                    egui::CollapsingHeader::new(i.to_string()).show(ui, |ui| {
+                        egui::CollapsingHeader::new("Position").show(
+                            ui,
+                            |ui| {
+                                ui.add(
+                                    egui::DragValue::new(
+                                        &mut transform.position[0],
+                                    )
+                                    .speed(0.01),
+                                );
+                                ui.add(
+                                    egui::DragValue::new(
+                                        &mut transform.position[1],
+                                    )
+                                    .speed(0.01),
+                                );
+                                ui.add(
+                                    egui::DragValue::new(
+                                        &mut transform.position[2],
+                                    )
+                                    .speed(0.01),
+                                );
+                            },
+                        );
+                    });
                 }
             });
         });
