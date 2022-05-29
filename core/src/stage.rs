@@ -1,19 +1,11 @@
 use crate::math::Transform;
 use crate::primitive::Model;
 use anyhow::Context;
-use legion::{IntoQuery, Registry, World};
+use hecs::World;
 use miniquad::{
     Bindings, Buffer, BufferLayout, EventHandler, Pipeline, Shader, Texture,
     VertexAttribute, VertexFormat,
 };
-
-pub fn create_registry() -> Registry<String> {
-    let mut registry = Registry::<String>::default();
-    registry.register::<Transform>("transform".to_string());
-    registry.register::<Model>("model".to_string());
-
-    registry
-}
 
 pub struct Stage {
     pipeline: Pipeline,
@@ -69,8 +61,9 @@ impl EventHandler for Stage {
 
         ctx.apply_pipeline(&self.pipeline);
 
-        let mut query = <(&Model, &Transform)>::query();
-        for (model, transform) in query.iter_mut(&mut self.world) {
+        for (_entity, (model, transform)) in
+            self.world.query_mut::<(&mut Model, &mut Transform)>()
+        {
             let (vertex_buffer, index_buffer, images) =
                 Self::spawn_model(ctx, model);
 
