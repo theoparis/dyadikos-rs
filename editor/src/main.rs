@@ -1,6 +1,5 @@
 use dyadikos::{math::Transform, primitive::Model, stage::Stage};
 use egui_miniquad::EguiMq;
-use legion::IntoQuery;
 use miniquad as mq;
 
 struct Editor {
@@ -26,39 +25,40 @@ impl miniquad::EventHandler for Editor {
                 if ui.button("+").clicked() {
                     self.stage
                         .world
-                        .push((Transform::default(), Model::quad(None)));
+                        .spawn((Transform::default(), Model::quad(None)));
                 }
 
-                let mut query = <(&mut Transform, &mut Model)>::query();
-
-                for (i, (transform, _model)) in
-                    query.iter_mut(&mut self.stage.world).enumerate()
+                for (entity, (transform, _model)) in
+                    self.stage.world.query_mut::<(&mut Transform, &mut Model)>()
                 {
-                    egui::CollapsingHeader::new(i.to_string()).show(ui, |ui| {
-                        egui::CollapsingHeader::new("Position").show(
-                            ui,
-                            |ui| {
-                                ui.add(
-                                    egui::DragValue::new(
-                                        &mut transform.position[0],
-                                    )
-                                    .speed(0.01),
-                                );
-                                ui.add(
-                                    egui::DragValue::new(
-                                        &mut transform.position[1],
-                                    )
-                                    .speed(0.01),
-                                );
-                                ui.add(
-                                    egui::DragValue::new(
-                                        &mut transform.position[2],
-                                    )
-                                    .speed(0.01),
-                                );
-                            },
-                        );
-                    });
+                    egui::CollapsingHeader::new(entity.id().to_string()).show(
+                        ui,
+                        |ui| {
+                            egui::CollapsingHeader::new("Position").show(
+                                ui,
+                                |ui| {
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[0],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[1],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                    ui.add(
+                                        egui::DragValue::new(
+                                            &mut transform.position[2],
+                                        )
+                                        .speed(0.01),
+                                    );
+                                },
+                            );
+                        },
+                    );
                 }
             });
         });

@@ -5,7 +5,7 @@ fn main() {
     miniquad::start(miniquad::conf::Conf::default(), |mut ctx| {
         let mut stage = Stage::new(&mut ctx);
 
-        stage.world = load("scene.hjson");
+        stage.world = load("scene.json").unwrap();
 
         UserData::owning(stage, ctx)
     });
